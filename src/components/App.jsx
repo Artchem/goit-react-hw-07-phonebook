@@ -5,10 +5,14 @@ import { Filter } from './Filter/Filter';
 import { useSelector } from 'react-redux/es/hooks/useSelector';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+// import { fetchMovie } from 'redux/actions';
 
 export default function App() {
   const contactsAll = useSelector(state => state.contacts);
   // console.log('contactsAll :>> ', contactsAll);
+
+  // const response = fetchMovie();
+  // console.log('response :>> ', response);
 
   return (
     <Container>
