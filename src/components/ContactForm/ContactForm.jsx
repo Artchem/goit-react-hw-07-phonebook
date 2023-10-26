@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'redux/contactsSlice';
-import { nanoid } from 'nanoid';
+
+// import { nanoid } from 'nanoid';
 
 import {
   ButtonStyled,
@@ -9,21 +9,22 @@ import {
   LabelStyled,
 } from './ContactForm.styled';
 import { toast } from 'react-toastify';
+import { addContact } from 'redux/operations';
 
 export default function ContactForm() {
   const dispatch = useDispatch();
-  const contactItem = useSelector(state => state.contacts.items);
+  const selectContactItem = useSelector(state => state.contacts.items);
 
   const handleSubmit = evt => {
     evt.preventDefault();
 
     const data = {
-      id: nanoid(5),
+      // id: nanoid(5),
       name: evt.target.name.value,
-      number: evt.target.number.value,
+      phone: evt.target.phone.value,
     };
     // console.log('data :>> ', data);
-    if (contactItem.some(contact => contact.name === data.name)) {
+    if (selectContactItem.some(contact => contact.name === data.name)) {
       toast.info(`${data.name} is already in contacts`);
       return;
     }
@@ -50,7 +51,7 @@ export default function ContactForm() {
         Number
         <InputStyled
           type="tel"
-          name="number"
+          name="phone"
           // value={number}
           // onChange={handleChange}
           // pattern="\\+?\\d{1,4}?[ .\\-\\s]?\\(?\\d{1,3}?\\)?[ .\\-\\s]?\\d{1,4}[ .\\-\\s]?\\d{1,4}[ .\\-\\s]?\\d{1,9}"

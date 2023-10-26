@@ -1,4 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, isAnyOf } from '@reduxjs/toolkit';
+import { addContact, delContact, fetchContacts } from './operations';
 
 const initialState = {
   items: [],
@@ -6,43 +7,55 @@ const initialState = {
   error: null,
 };
 
+const handelPending = state => {
+  state.isLoading = true;
+};
+
+const handleFulfilledGet = (state, action) => {
+  state.isLoading = false;
+  state.error = null;
+  state.items = action.payload;
+};
+const handleFulfilledAdd = (state, action) => {
+  state.isLoading = false;
+  state.error = null;
+  state.items.push(action.payload);
+};
+const handleFulfilledDel = (state, action) => {
+  state.isLoading = false;
+  state.error = null;
+  state.items = state.items.filter(item => item.id !== action.payload.id);
+};
+
+const handleRejected = (state, action) => {
+  state.isLoading = false;
+  state.error = action.payload;
+};
+
 export const contactsSlice = createSlice({
   // Ім'я слайсу
   name: 'contacts',
   // Початковий стан редюсера слайсу
   initialState,
-  // Об'єкт редюсерів
-  reducers: {
-    fetchingInProgress(state) {
-      state.isLoading = true;
-    },
-    fetchingSuccess(state, action) {
-      state.isLoading = false;
-      state.error = null;
-      state.items = action.payload;
-    },
-    fetchingError(state, action) {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
 
-    addContact(state, action) {
-      state.items.push(action.payload);
-    },
-
-    delContact(state, action) {
-      state.items = state.items.filter(item => item.id !== action.payload.id);
-    },
+  extraReducers: builder => {
+    builder
+      .addCase(fetchContacts.fulfilled, handleFulfilledGet)
+      .addCase(addContact.fulfilled, handleFulfilledAdd)
+      .addCase(delContact.fulfilled, handleFulfilledDel)
+      .addMatcher(
+        isAnyOf(fetchContacts.pending, addContact.pending, delContact.pending),
+        handelPending
+      )
+      .addMatcher(
+        isAnyOf(
+          fetchContacts.rejected,
+          addContact.rejected,
+          delContact.rejected
+        ),
+        handleRejected
+      );
   },
 });
 
-// Генератори екшенів
-export const {
-  addContact,
-  delContact,
-  fetchingInProgress,
-  fetchingSuccess,
-  fetchingError,
-} = contactsSlice.actions;
-// Редюсер слайсу
 export const contactsReducer = contactsSlice.reducer;

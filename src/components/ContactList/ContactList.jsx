@@ -1,27 +1,22 @@
 import { useSelector } from 'react-redux';
 import { Btn, Item } from './ContactList.styled';
 import { useDispatch } from 'react-redux';
-import { delContact } from 'redux/contactsSlice';
-import { useEffect } from 'react';
-import { fetchContacts } from 'redux/operations';
+import { delContact } from 'redux/operations';
+import {
+  getFiltredContacts,
+  selectContactsItems,
+  selectError,
+  selectIsLoading,
+} from 'redux/selectors';
 
 export function ContactList() {
-  const { items, isLoading, error } = useSelector(state => state.contacts);
-  const filterValue = useSelector(state => state.filter.value);
+  const error = useSelector(selectError);
+  const isLoading = useSelector(selectIsLoading);
+  const items = useSelector(selectContactsItems);
   const dispatch = useDispatch();
-  console.log('contacts  ContactList:>> ', items);
 
-  useEffect(() => {
-    dispatch(fetchContacts());
-  }, [dispatch]);
-
-  const getFiltredContacts = () => {
-    const normalizedFilter = filterValue.toLowerCase().trim();
-    return items.filter(contact =>
-      contact.name.toLowerCase().includes(normalizedFilter)
-    );
-  };
-  const filteredContacts = getFiltredContacts();
+  const filteredContacts = useSelector(getFiltredContacts);
+  // console.log('filteredContacts :>> ', filteredContacts);
 
   return (
     <>
@@ -32,10 +27,7 @@ export function ContactList() {
         filteredContacts.map(contact => (
           <Item key={contact.id}>
             {contact.name}: {contact.phone}
-            <Btn
-              onClick={() => dispatch(delContact({ id: contact.id }))}
-              type="button"
-            >
+            <Btn onClick={() => dispatch(delContact(contact.id))} type="button">
               Delete
             </Btn>
           </Item>
